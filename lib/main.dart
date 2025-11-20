@@ -7,16 +7,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/routing/route_provider.dart';
 import 'core/theme/provider/theme_provider.dart';
-import 'core/data/firebase_options.dart';
+import 'core/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
-  
-  Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(ProviderScope(child: const MyApp()));
 }
 
@@ -44,7 +42,6 @@ class MyApp extends ConsumerWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeMode,
-          
         );
       },
     );

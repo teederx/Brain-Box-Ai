@@ -27,6 +27,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       textInputAction: textInputAction,
       keyboardType: keyboardType,
       decoration: InputDecoration(

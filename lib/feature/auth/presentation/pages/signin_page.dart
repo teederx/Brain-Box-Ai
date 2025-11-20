@@ -1,24 +1,27 @@
 import 'package:ai_chat_app/core/utils/validators.dart';
 import 'package:ai_chat_app/core/widgets/auth_options.dart';
+import 'package:ai_chat_app/feature/auth/presentation/pages/forgot_password_page.dart';
+import 'package:ai_chat_app/feature/auth/presentation/provider/login/login_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/widgets/custom_back_botton.dart';
-import '../../../core/widgets/custom_text_field.dart';
-import '../../signup/presentation/signup_page.dart';
+import '../../../../core/widgets/custom_back_botton.dart';
+import '../../../../core/widgets/custom_text_field.dart';
+import 'signup_page.dart';
 
-class SigninPage extends StatefulWidget {
+class SigninPage extends ConsumerStatefulWidget {
   static const routeName = 'signin';
   static const routeSettings = '/signin';
   const SigninPage({super.key});
 
   @override
-  State<SigninPage> createState() => _SigninPageState();
+  ConsumerState<SigninPage> createState() => _SigninPageState();
 }
 
-class _SigninPageState extends State<SigninPage> {
+class _SigninPageState extends ConsumerState<SigninPage> {
   final _formkey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -39,13 +42,13 @@ class _SigninPageState extends State<SigninPage> {
     final form = _formkey.currentState;
 
     if (form == null || !form.validate()) return;
-    /* ref.read(signinProvider.notifier).signin(
+
+    ref
+        .read(loginProvider.notifier)
+        .signIn(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-        ); */
-    debugPrint(
-      'Email: ${_emailController.text}\nPassword: ${_passwordController.text}',
-    );
+        );
   }
 
   void togglePasswordVisibility() {
@@ -56,6 +59,24 @@ class _SigninPageState extends State<SigninPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(loginProvider, (previous, next) {
+      next.when(
+        data: (data) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login successful!')));
+        },
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
+        },
+        loading: () {},
+      );
+    });
+
+    final loginState = ref.watch(loginProvider);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -115,7 +136,7 @@ class _SigninPageState extends State<SigninPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          //TODO: Implement forgot password functionality
+                          context.pushNamed(ForgotPasswordPage.routeName);
                         },
                         child: Text(
                           'Forgot Password?',
@@ -139,7 +160,10 @@ class _SigninPageState extends State<SigninPage> {
                           borderRadius: BorderRadius.circular(15.r),
                         ),
                       ),
-                      child: Text('Login'),
+                      child:
+                          loginState.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Login'),
                     ),
                     20.verticalSpace,
 

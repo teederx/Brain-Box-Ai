@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dio/dio.dart';
 
-import '../data/model/custom_error/custom_error.dart';
+import 'custom_error/custom_error.dart';
 
 CustomError handleException(e) {
   try {

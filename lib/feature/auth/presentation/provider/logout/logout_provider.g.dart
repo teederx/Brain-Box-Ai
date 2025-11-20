@@ -1,26 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'route_provider.dart';
+part of 'logout_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$routerHash() => r'6ce66d9d84e422451f6490b5fbd1691bece8bf76';
+String _$logoutHash() => r'ee5a16d060eae4879da936a919d6c9ddf182a9e9';
 
-/// See also [router].
-@ProviderFor(router)
-final routerProvider = AutoDisposeProvider<GoRouter>.internal(
-  router,
-  name: r'routerProvider',
+/// See also [Logout].
+@ProviderFor(Logout)
+final logoutProvider = AutoDisposeAsyncNotifierProvider<Logout, void>.internal(
+  Logout.new,
+  name: r'logoutProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$routerHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$logoutHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef RouterRef = AutoDisposeProviderRef<GoRouter>;
+typedef _$Logout = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,24 +1,26 @@
-import 'package:ai_chat_app/feature/signin/presentation/signin_page.dart';
+import 'package:ai_chat_app/feature/auth/presentation/pages/signin_page.dart';
+import 'package:ai_chat_app/feature/auth/presentation/provider/signup/signup_provider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/utils/validators.dart';
-import '../../../core/widgets/auth_options.dart';
-import '../../../core/widgets/custom_back_botton.dart';
-import '../../../core/widgets/custom_text_field.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/auth_options.dart';
+import '../../../../core/widgets/custom_back_botton.dart';
+import '../../../../core/widgets/custom_text_field.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   static const routeName = 'signUp';
   static const routeSettings = '/signup';
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final _formkey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -36,18 +38,22 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void submit() {
+    print(
+      'Signup attempt: ${_emailController.text}, ${_passwordController.text}, ${_nameController.text}',
+    );
     FocusManager.instance.primaryFocus!.unfocus();
 
     final form = _formkey.currentState;
 
     if (form == null || !form.validate()) return;
-    /* ref.read(signinProvider.notifier).signin(
+
+    ref
+        .read(signupProvider.notifier)
+        .signup(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
-        ); */
-    debugPrint(
-      'Name: ${_nameController.text}\nEmail: ${_emailController.text}\nPassword: ${_passwordController.text}',
-    );
+          name: _nameController.text.trim(),
+        );
   }
 
   void togglePasswordVisibility() {
@@ -58,6 +64,24 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(signupProvider, (previous, next) {
+      next.when(
+        data: (data) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Account created successfully!')),
+          );
+        },
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
+        },
+        loading: () {},
+      );
+    });
+
+    final signupState = ref.watch(signupProvider);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -120,25 +144,6 @@ class _SignupPageState extends State<SignupPage> {
                       validator: (value) => Validators.validatePassword(value),
                     ),
 
-                    10.verticalSpace,
-                    // Forgot password button aligned to the right
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          //TODO: Implement forgot password functionality
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-
                     20.verticalSpace,
                     // Register button with rounded corners
                     ElevatedButton(
@@ -149,7 +154,10 @@ class _SignupPageState extends State<SignupPage> {
                           borderRadius: BorderRadius.circular(15.r),
                         ),
                       ),
-                      child: Text('Register'),
+                      child:
+                          signupState.isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text('Register'),
                     ),
                     20.verticalSpace,
 
