@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/auth_options.dart';
-import '../../signin/presentation/signin_page.dart';
-import '../../signup/presentation/signup_page.dart';
+import '../../auth/presentation/pages/signin_page.dart';
+import '../../auth/presentation/pages/signup_page.dart';
 import 'widgets/custom_button.dart';
 import 'widgets/logo_animation.dart';
 

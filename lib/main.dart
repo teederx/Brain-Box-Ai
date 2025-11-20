@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/routing/route_provider.dart';
 import 'core/theme/provider/theme_provider.dart';
-import 'core/data/firebase_options.dart';
+import 'core/firebase/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
