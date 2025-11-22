@@ -27,8 +27,13 @@ class Signup extends _$Signup {
     final authService = ref.read(authServiceProvider);
     final registerUseCase = RegisterUsecase(authService);
 
-    final newState = await AsyncValue.guard(
-      () => registerUseCase.call(email: email, password: password, name: name),
+    final result = await registerUseCase.call(
+      RegisterParams(email: email, password: password, name: name),
+    );
+
+    final newState = result.fold(
+      (failure) => AsyncValue<void>.error(failure.message, StackTrace.current),
+      (_) => const AsyncValue<void>.data(null),
     );
 
     if (key == _key) {

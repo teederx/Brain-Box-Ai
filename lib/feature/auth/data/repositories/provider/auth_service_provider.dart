@@ -12,8 +12,8 @@ part 'auth_service_provider.g.dart';
 
 @riverpod
 AuthRepository authService(Ref ref) {
-  final authFirebaseDataSrc = AuthFirebaseDataSrc();
-  final userFirestoreDataSrc = UserFirestoreDataSrc();
+  final authFirebaseDataSrc = ref.watch(authFirebaseDataSrcProvider);
+  final userFirestoreDataSrc = ref.watch(userFireStoreDataSrcProvider);
   return AuthServiceImpl(
     authFirebaseDataSrc: authFirebaseDataSrc,
     userFirestoreDataSrc: userFirestoreDataSrc,

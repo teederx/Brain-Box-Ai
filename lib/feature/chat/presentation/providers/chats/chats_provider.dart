@@ -1,63 +1,51 @@
+import 'dart:developer';
+import 'package:ai_chat_app/feature/chat/domain/entities/message.dart';
+import 'package:ai_chat_app/feature/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:ai_chat_app/feature/chat/domain/usecases/send_message_usecase.dart';
+import 'package:ai_chat_app/feature/chat/presentation/providers/active_chat_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chats_provider.g.dart';
 
-/// Simple chat message model
-class Message {
-  final String role; // "user" or "bot"
-  final String content;
+@riverpod
+class IsBotTyping extends _$IsBotTyping {
+  @override
+  bool build() => false;
 
-  Message({required this.role, required this.content});
+  void setTyping(bool isTyping) => state = isTyping;
 }
 
 @riverpod
 class Chats extends _$Chats {
   @override
-  FutureOr<List<Message>> build() {
-    return [
-      Message(role: 'user', content: 'Hello, how are you?'),
-      Message(
-        role: 'bot',
-        content:
-            'Hi there! My name is BrainBox,\nI am doing well, thanks for asking!',
-      ),
-    ];
+  Stream<List<Message>> build() {
+    final activeChatId = ref.watch(activeChatProvider);
+    if (activeChatId == null) {
+      return Stream.value([]);
+    }
+    final getMessages = ref.watch(getMessagesUseCaseProvider);
+    return getMessages(activeChatId);
   }
 
   Future<void> addMessage(String userMessage) async {
-    final currentMessages = state.value ?? [];
+    final activeChatId = ref.read(activeChatProvider);
+    if (activeChatId == null) return;
 
-    // 1. Add the user message instantly
-    state = AsyncValue.data([
-      ...currentMessages,
-      Message(role: 'user', content: userMessage),
-    ]);
-
-    // 2. Set loading state to indicate "bot is typing"
-    state = AsyncValue.loading();
-
-    // 3. Simulate API call to get bot reply
     try {
-      await Future.delayed(const Duration(seconds: 3)); // simulate delay
-      final botReply = Message(
-        role: 'bot',
-        content:
-            'Hi there! My name is BrainBox,\nI am doing well, thanks for asking!',
+      ref.read(isBotTypingProvider.notifier).setTyping(true);
+      final sendMessage = ref.read(sendMessageUseCaseProvider);
+      final result = await sendMessage(
+        SendMessageParams(activeChatId, userMessage),
       );
 
-      // Append bot reply to last known messages
-      state = AsyncValue.data([
-        ...currentMessages,
-        Message(role: 'user', content: userMessage),
-        botReply,
-      ]);
-    } catch (err, _) {
-      // Append error as bot reply
-      state = AsyncValue.data([
-        ...currentMessages,
-        Message(role: 'user', content: userMessage),
-        Message(role: 'bot', content: '[Error: $err]'),
-      ]);
+      result.fold(
+        (failure) => log('Error sending message: ${failure.message}'),
+        (_) => null,
+      );
+    } catch (e) {
+      log('Error sending message: $e');
+    } finally {
+      ref.read(isBotTypingProvider.notifier).setTyping(false);
     }
   }
 }

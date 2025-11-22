@@ -25,8 +25,13 @@ class Login extends _$Login {
     final loginUseCase = LoginUsecase(authService);
 
     if (key == _key) {
-      state = await AsyncValue.guard(
-        () => loginUseCase.call(email: email, password: password),
+      final result = await loginUseCase.call(
+        LoginParams(email: email, password: password),
+      );
+
+      state = result.fold(
+        (failure) => AsyncValue.error(failure.message, StackTrace.current),
+        (_) => const AsyncValue.data(null),
       );
     }
   }

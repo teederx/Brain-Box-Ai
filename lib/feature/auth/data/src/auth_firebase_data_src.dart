@@ -1,6 +1,10 @@
 import 'package:ai_chat_app/core/firebase/firebase_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart' as gsi;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'auth_firebase_data_src.g.dart';
 
 class AuthFirebaseDataSrc {
   final gsi.GoogleSignIn _googleSignIn;
@@ -103,4 +107,9 @@ class AuthFirebaseDataSrc {
 
   //Current User
   User? get currentUser => fbAuth.currentUser;
+}
+
+@riverpod
+AuthFirebaseDataSrc authFirebaseDataSrc (Ref ref) {
+  return AuthFirebaseDataSrc();
 }
