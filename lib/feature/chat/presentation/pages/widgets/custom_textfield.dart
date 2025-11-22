@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextfield extends StatelessWidget {
   const CustomTextfield({
-    super.key, required this.onSend, required this.controller,
+    super.key,
+    required this.onSend,
+    required this.controller,
   });
 
   final Function onSend;
@@ -16,11 +18,12 @@ class CustomTextfield extends StatelessWidget {
       child: Material(
         borderRadius: BorderRadius.circular(7.r),
         elevation: 5,
-        shadowColor: Theme.of(
-          context,
-        ).colorScheme.primary.withAlpha(40),
+        shadowColor: Theme.of(context).colorScheme.primary.withAlpha(40),
         child: TextField(
           controller: controller,
+          minLines: 1,
+          maxLines: 6,
+          keyboardType: TextInputType.multiline,
           decoration: InputDecoration(
             hintText: 'Type a message',
             suffixIcon: IconButton(
@@ -29,9 +32,7 @@ class CustomTextfield extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withAlpha(5),
+                color: Theme.of(context).colorScheme.primary.withAlpha(5),
                 width: 1.w,
               ),
               borderRadius: BorderRadius.circular(7.r),

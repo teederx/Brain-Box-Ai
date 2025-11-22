@@ -1,5 +1,10 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/firebase/firebase_constants.dart';
 import '../models/user_model.dart';
+
+part 'user_firestore_data_src.g.dart';
 
 class UserFirestoreDataSrc {
   UserFirestoreDataSrc();
@@ -27,4 +32,9 @@ class UserFirestoreDataSrc {
       rethrow;
     }
   }
+}
+
+@riverpod
+UserFirestoreDataSrc userFireStoreDataSrc(Ref ref) {
+  return UserFirestoreDataSrc();
 }

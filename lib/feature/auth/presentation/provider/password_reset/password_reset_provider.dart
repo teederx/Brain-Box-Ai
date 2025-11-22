@@ -12,13 +12,16 @@ class PasswordReset extends _$PasswordReset {
   }
 
   Future<void> sendResetEmail({required String email}) async {
-    state = AsyncLoading();
+    state = const AsyncLoading();
 
     final authService = ref.read(authServiceProvider);
     final emailResetUsecase = SendPasswordResetEmailUsecase(authService);
-    state = await AsyncValue.guard(() => emailResetUsecase.call(email: email));
+
+    final result = await emailResetUsecase.call(email);
+
+    state = result.fold(
+      (failure) => AsyncValue.error(failure.message, StackTrace.current),
+      (_) => const AsyncValue.data(null),
+    );
   }
 }
-
-
-//TODO: Implement code confirmation 

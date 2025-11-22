@@ -1,3 +1,4 @@
+import 'package:ai_chat_app/core/usecase/usecase.dart';
 import 'package:ai_chat_app/feature/auth/data/repositories/provider/auth_service_provider.dart';
 import 'package:ai_chat_app/feature/auth/domain/usecases/logout_usecase.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,7 +23,12 @@ class Logout extends _$Logout {
     final logoutUsecase = LogoutUsecase(authService);
 
     if (key == _key) {
-      state = await AsyncValue.guard(() => logoutUsecase.call());
+      final result = await logoutUsecase.call(NoParams());
+
+      state = result.fold(
+        (failure) => AsyncValue.error(failure.message, StackTrace.current),
+        (_) => const AsyncValue.data(null),
+      );
     }
   }
 }
